@@ -1,0 +1,22 @@
+CREATE DATABASE project_chat
+DEFAULT CHARACTER SET utf8
+COLLATE utf8_unicode_ci;
+
+use project_chat;
+
+CREATE TABLE usuarios(
+	id INT AUTO_INCREMENT NOT NULL,
+	nome_usuario VARCHAR(50) NOT NULL,
+	senha VARCHAR(255) NOT NULL,
+	iv VARCHAR(255) NOT NULL,
+	PRIMARY KEY(id)
+) CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE chat(
+	id INT AUTO_INCREMENT NOT NULL,
+	comentario VARCHAR(300) NOT NULL,
+	data DATETIME NOT NULL,
+	PRIMARY KEY(id),
+	pk_id_usuario INT NOT NULL,
+	FOREIGN KEY(pk_id_usuario) REFERENCES usuarios(id)
+) CHARACTER SET utf8 COLLATE utf8_general_ci;
