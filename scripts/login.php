@@ -16,7 +16,7 @@
         <script>
             $(function(){
                 <?php
-                    // Verificando se o campo nome de usuário está vázio, se sim, será mostrado um aviso de erro, se não, o aviso será removido.
+                    // Verificando se o campo nome de usuário está vazio, se sim, será mostrado um aviso de erro, se não, o aviso será removido.
                     if(empty($nome_usuario)){
                         $mensagens_erro["nome_usuario_vazio"] = true;
                         ?>
@@ -57,7 +57,7 @@
                     }
                     <?php
 
-                    // Verificando se o campo senha está vázio, se sim, será mostrado um aviso de erro, se não, o aviso será removido.
+                    // Verificando se o campo senha está vazio, se sim, será mostrado um aviso de erro, se não, o aviso será removido.
                     if(empty($senha)){
                         $mensagens_erro["senha_vazio"] = true;
                         ?>

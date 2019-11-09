@@ -3,6 +3,21 @@
     if(!isset($_SESSION)){
         session_start();
     }
+
+    // Se não tiver ninguém logado, o usuário será redirecionado para a página do usuário.
+    if(!$_SESSION["id_usuario"]){
+        header("location: area-usuario.php");
+    }
+
+    // Script com métodos para várias coisas.
+    require_once "scripts/dados.php";
+    $dados = new Dados("project_chat", "localhost", "root", "");
+
+    // Método que pega o nome do usuário a partir do seu id.
+    $mostrar_nome = $dados->BuscarNomeUsuario($_SESSION["id_usuario"]);
+
+    // Método que retorna todos comentários com o nome do usuário e data de postagem.
+    $mostrar_comentarios = $dados->BuscandoComentarios();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,8 +51,15 @@
         body{
             background-color: #272727;
             display: flex;
-            flex-flow: row nowrap;
-            justify-content: center;
+            flex-flow: column nowrap;
+            align-items: center;
+        }
+
+        .mensagem-erro{
+            color: #da1313;
+            font-size: 11pt;
+            text-align: center;
+            margin-top: 10px;
         }
 
         #div-chat{
@@ -45,8 +67,7 @@
             background-color: #f0f0f0;
             width: 350px;
             border-radius: 1%;
-            box-shadow: 0 0 2px 0px #cecece;
-            border: 1px solid #cecece;
+            box-shadow: 0 0 2px 0px #c7c7c7;
         }
 
         #titulo-chat{
@@ -55,6 +76,8 @@
             padding: 7px 0;
             background-color: #272727;
             margin-bottom: 1px;
+            display: flex;
+            flex-flow: column nowrap;
         }
 
         #titulo-chat h5{
@@ -156,80 +179,79 @@
         #publicar-comentario button i{
             padding-top: 2px;
         }
+
+        #sair{
+            text-decoration: none;
+            color: #c7c7c7;
+            font-size: 11pt;
+            margin-top: 5px;
+        }
+
+        #sair:hover{
+            color: #9d9d9d;
+            transition: ease-in 0.15s;
+            cursor: pointer;
+        }
+
+        #sair i{
+            margin-right: 5px;
+        }
     </style>
     <title>Project Chat</title>
 </head>
 <body>
-    <!-- <a href="scripts/sair.php">Sair</a> -->
     <section id="div-chat">
         <div id="titulo-chat">
-            <h5><i class="fas fa-user"></i>Project Chat - Sala 1</h5>
+            <h5><i class="fas fa-user"></i><?= $mostrar_nome["nome_usuario"] ?> - Sala 1</h5>
+            <a href="scripts/sair.php" id="sair"><i class="fas fa-sign-out-alt"></i>Logout</a>
         </div>
 
         <div id="chat">
+            <?php foreach($mostrar_comentarios as $mc){ 
+            // Formatando a data recebida do banco de dados
+            $data = new DateTime($mc["data"]);
+            $horario = $data->format("d/m/Y")." - ".$data->format("H:i:s");
+            ?>
             <div id="usuario-info">
                 <div id="nome-comentario">
                     <div id="nome-info">
-                        <h5 id="nome-usuario-chat">Nome do usuário</h5>
-                        <h5 id="data-usuario-chat">07/11/2019 - 01:05</h5>
+                        <h5 id="nome-usuario-chat"><?= $mc["nome_usuario"] ?></h5>
+                        <h5 id="data-usuario-chat"><?= $horario ?></h5>
                     </div>
 
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+                    <p><?= $mc["comentario"] ?></p>
                 </div>
             </div>
-
-            <div id="usuario-info">
-                <div id="nome-comentario">
-                    <div id="nome-info">
-                        <h5 id="nome-usuario-chat">Nome do usuário</h5>
-                        <h5 id="data-usuario-chat">07/11/2019 - 01:05</h5>
-                    </div>
-
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                </div>
-            </div>
-
-            <div id="usuario-info">
-                <div id="nome-comentario">
-                    <div id="nome-info">
-                        <h5 id="nome-usuario-chat">Nome do usuário</h5>
-                        <h5 id="data-usuario-chat">07/11/2019 - 01:05</h5>
-                    </div>
-
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                </div>
-            </div>
-
-            <div id="usuario-info">
-                <div id="nome-comentario">
-                    <div id="nome-info">
-                        <h5 id="nome-usuario-chat">Nome do usuário</h5>
-                        <h5 id="data-usuario-chat">07/11/2019 - 01:05</h5>
-                    </div>
-
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                </div>
-            </div>
-
-            <div id="usuario-info">
-                <div id="nome-comentario">
-                    <div id="nome-info">
-                        <h5 id="nome-usuario-chat">Nome do usuário</h5>
-                        <h5 id="data-usuario-chat">07/11/2019 - 01:05</h5>
-                    </div>
-
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
-                </div>
-            </div>
+            <?php } ?>
         </div>
 
         <form method="POST" autocomplete="off" id="publicar-comentario">
             <div id="form-group">
-                <input type="text">
+                <input type="text" id="comentario-input">
             </div>
 
-            <button type="button"><i class="fas fa-reply"></i></button>
+            <button type="button" id="publicar"><i class="fas fa-reply"></i></button>
         </form>
     </section>
+
+    <div id="retorno-ajax-js"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            // Quando o botão publicar for pressionado, será feita uma verificação se o campo está vázio, se não estiver, o comentário será enviado.
+            $("#publicar").click(function(){
+                var comentario = $("#comentario-input").val();
+
+                $.ajax({
+                    url: "scripts/publicar-comentario.php",
+                    type: "post",
+                    data: {comentario:comentario},
+                    success: function(resposta){
+                        $("#retorno-ajax-js").html(resposta);
+                    }
+                })
+            })
+        })
+    </script>
 </body>
 </html>

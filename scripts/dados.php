@@ -72,5 +72,29 @@
                 return false;
             }
         }
+
+        // Buscando o nome do usuário pelo seu id de sessão.
+        public function BuscarNomeUsuario($id){
+            $sql = $this->pdo->prepare("SELECT nome_usuario FROM usuarios WHERE id = :id");
+            $sql->bindValue(":id", $id, PDO::PARAM_INT);
+            $sql->execute();
+            return $sql->fetch();
+        }
+
+        // Enviando o comentário do usuário para o banco de dados.
+        public function EnviarComentário($comentario, $id_usuario){
+            $sql = $this->pdo->prepare("INSERT INTO chat (comentario, data, pk_id_usuario) VALUES (:c, :d, :piu)");
+            $sql->bindValue(":c", $comentario, PDO::PARAM_STR);
+            $sql->bindValue(":d", date("Y-m-d H:i:s"));
+            $sql->bindValue(":piu", $id_usuario, PDO::PARAM_INT);
+            $sql->execute();
+        }
+
+        // Buscando comentários com o nome do usuário e data de postagem.
+        public function BuscandoComentarios(){
+            $sql = $this->pdo->prepare("SELECT *,(SELECT nome_usuario FROM usuarios WHERE id = pk_id_usuario) AS nome_usuario FROM chat ORDER BY id ASC");
+            $sql->execute();
+            return $sql->fetchAll();
+        }
     }
 ?>
