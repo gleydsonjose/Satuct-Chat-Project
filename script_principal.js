@@ -54,7 +54,7 @@ $(function(){
         // Inicializando um array para dados do usuário e uma variável com URL.
         data: {
             log: {nome_usuario: "", senha: ""},
-            urlPost: "http://localhost/Chat-Project/scripts/login.php"
+            urlPost: "http://"+window.location.hostname+"/Chat-Project/scripts/login.php"
         },
 
         methods: {
@@ -160,7 +160,7 @@ $(function(){
         // Inicializando um array para dados do usuário e uma variável com URL.
         data: {
             cad: {nome_usuario: "", senha: "", repita_senha: ""},
-            urlPost: "http://localhost/Chat-Project/scripts/cadastro.php"
+            urlPost: "http://"+window.location.hostname+"/Chat-Project/scripts/cadastro.php"
         },
 
         methods: {
@@ -281,7 +281,7 @@ $(function(){
                         // Se não existir essa mensagem, ela será mostrada.
                         // OBS: Isso é para evitar repetição da mesma mensagem.
                         // Logo após ela ser mostrada, os campos serão limpos.
-                        if(!$("#msg-sucesso-cadastro").length){
+                        if(!$(".msg-sucesso-cadastro").length){
                             $(".gif-loader").after(resposta.data.sucesso_cadastro);
 
                             cadastro.cad.nome_usuario = "";

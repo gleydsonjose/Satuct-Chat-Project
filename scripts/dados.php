@@ -81,20 +81,87 @@
             return $sql->fetch();
         }
 
-        // Enviando o comentário do usuário para o banco de dados.
-        public function EnviarComentário($comentario, $id_usuario){
-            $sql = $this->pdo->prepare("INSERT INTO chat (comentario, data, pk_id_usuario) VALUES (:c, :d, :piu)");
-            $sql->bindValue(":c", $comentario, PDO::PARAM_STR);
+        // Enviando a mensagem do usuário para o banco de dados.
+        public function EnviarMensagem($mensagem, $id_usuario, $id_sala){
+            $sql = $this->pdo->prepare("INSERT INTO chat (mensagem, data, pk_id_usuario, pk_id_sala) VALUES (:m, :d, :piu, :pis)");
+            $sql->bindValue(":m", $mensagem, PDO::PARAM_STR);
             $sql->bindValue(":d", date("Y-m-d H:i:s"));
             $sql->bindValue(":piu", $id_usuario, PDO::PARAM_INT);
+            $sql->bindValue(":pis", $id_sala, PDO::PARAM_INT);
             $sql->execute();
         }
 
-        // Buscando comentários com o nome do usuário e data de postagem.
-        public function BuscandoComentarios(){
-            $sql = $this->pdo->prepare("SELECT *,(SELECT nome_usuario FROM usuarios WHERE id = pk_id_usuario) AS nome_usuario FROM chat ORDER BY id ASC");
+        // Buscando mensagens com o nome do usuário e data de postagem.
+        public function BuscandoMensagens($id_sala_usuario){
+            $sql = $this->pdo->prepare("SELECT *,(SELECT nome_usuario FROM usuarios WHERE id = pk_id_usuario) AS nome_usuario FROM chat WHERE pk_id_sala = :pis ORDER BY id ASC");
+            $sql->bindValue(":pis", $id_sala_usuario, PDO::PARAM_INT);
             $sql->execute();
-            return $sql->fetchAll();
+            return $sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // Buscando todas salas
+        public function BuscarTodasSalas(){
+            $sql = $this->pdo->prepare("SELECT * FROM salas");
+            $sql->execute();
+            return $sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // Verificando se o usuário está em alguma sala, se ele não estiver, será retornado true.
+        public function VerificarSalaUsuario($id_usuario){
+            $sql = $this->pdo->prepare("SELECT * FROM lista_pessoas_sala WHERE id_usuario = :iu");
+            $sql->bindValue(":iu", $id_usuario, PDO::PARAM_INT);
+            $sql->execute();
+
+            if($sql->rowCount() == 0){
+                return true;
+            }
+        }
+
+        // Colocando a sala padrão para o usuário com id dele e id da sala recebidos
+        public function InicializadorSalaAtual($id_usuario, $id_sala){
+            $sql = $this->pdo->prepare("INSERT INTO lista_pessoas_sala (id_usuario, id_sala, status) VALUES (:iu, :is, 1)");
+            $sql->bindValue(":iu", $id_usuario, PDO::PARAM_INT);
+            $sql->bindValue(":is", $id_sala, PDO::PARAM_INT);
+            $sql->execute();
+        }
+
+        // Buscando sala atual do usuário logado
+        public function BuscarSalaAtualUsuario($id_usuario){
+            $sql = $this->pdo->prepare("SELECT id_sala FROM lista_pessoas_sala WHERE id_usuario = :iu");
+            $sql->bindValue(":iu", $id_usuario, PDO::PARAM_INT);
+            $sql->execute();
+            return $sql->fetch();
+        }
+
+        // Entrando na sala escolhida pelo usuário
+        public function EntrarNaSala($id_sala, $id_usuario){
+            $sql = $this->pdo->prepare("UPDATE lista_pessoas_sala SET id_sala = :is WHERE id_usuario = :iu");
+            $sql->bindValue(":is", $id_sala, PDO::PARAM_INT);
+            $sql->bindValue(":iu", $id_usuario, PDO::PARAM_INT);
+            $sql->execute();
+        }
+
+        // Alterando o status do usuário
+        public function StatusUsuario($id_usuario, $status){
+            $sql = $this->pdo->prepare("UPDATE lista_pessoas_sala SET status = :s WHERE id_usuario = :iu");
+            $sql->bindValue(":iu", $id_usuario, PDO::PARAM_INT);
+            $sql->bindValue(":s", $status, PDO::PARAM_INT);
+            $sql->execute();
+        }
+
+        // Buscando todos usuários online numa sala específica
+        public function BuscandoUsuariosOnlineSala($id_sala){
+            $sql = $this->pdo->prepare("SELECT *,(SELECT nome_usuario FROM usuarios WHERE id = id_usuario) AS nome_usuario FROM lista_pessoas_sala WHERE id_sala = :is AND status = 1 ORDER BY id ASC");
+            $sql->bindValue(":is", $id_sala, PDO::PARAM_INT);
+            $sql->execute();
+            return $sql->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // Buscando todos os usuários online
+        public function BuscandoUsuariosOnline(){
+            $sql = $this->pdo->prepare("SELECT *,(SELECT nome_usuario FROM usuarios WHERE id = id_usuario) AS nome_usuario FROM lista_pessoas_sala WHERE status = 1 ORDER BY id ASC");
+            $sql->execute();
+            return $sql->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 ?>

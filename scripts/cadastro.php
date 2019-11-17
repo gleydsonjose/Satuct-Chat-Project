@@ -58,11 +58,7 @@
     }else{
         unset($mensagens["repita_senha_vazio"]);
     }
-
-    if(count($mensagens) > 0){
-
-    }
-
+    
     // Se não houver mensagens de erro, o usuário será cadastrado e uma mensagem de sucesso será adicionada ao array mensagens.
     // Se houver mensagens de erro, será removida a mensagem de sucesso do array, e vai ser retornado todas mensagens em formato JSON.
     if(count($mensagens) == 0){

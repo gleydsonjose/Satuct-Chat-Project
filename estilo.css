@@ -180,7 +180,6 @@ i{
     display: flex;
     flex-flow: row nowrap;
     justify-content: center;
-    align-items: center;
     padding-bottom: 9px;
 }
 
@@ -428,7 +427,7 @@ i{
     margin-right: 2px;
 }
 
-.msg-erro-publicar-mensagem{
+.mensagens-aviso-chat{
     margin-bottom: 5px;
     width: 630px;
 }

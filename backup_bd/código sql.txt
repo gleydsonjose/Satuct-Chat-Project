@@ -14,9 +14,29 @@ CREATE TABLE usuarios(
 
 CREATE TABLE chat(
 	id INT AUTO_INCREMENT NOT NULL,
-	comentario VARCHAR(300) NOT NULL,
+	mensagem VARCHAR(300) NOT NULL,
 	data DATETIME NOT NULL,
 	PRIMARY KEY(id),
 	pk_id_usuario INT NOT NULL,
-	FOREIGN KEY(pk_id_usuario) REFERENCES usuarios(id)
+	FOREIGN KEY(pk_id_usuario) REFERENCES usuarios(id),
+	pk_id_sala INT NOT NULL,
+	FOREIGN KEY(pk_id_sala) REFERENCES salas(id)
 ) CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE salas(
+	id INT AUTO_INCREMENT NOT NULL,
+	sala VARCHAR(30),
+	PRIMARY KEY(id)
+) CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+CREATE TABLE lista_pessoas_sala(
+	id INT AUTO_INCREMENT NOT NULL,
+	id_usuario INT NOT NULL,
+	id_sala INT NOT NULL,
+	status TINYINT NOT NULL,
+	PRIMARY KEY(id)
+) CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+INSERT INTO salas (sala) VALUES ("Sala 01");
+INSERT INTO salas (sala) VALUES ("Sala 02");
+INSERT INTO salas (sala) VALUES ("Sala 03");
